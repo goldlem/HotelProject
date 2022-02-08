@@ -1,0 +1,11 @@
+.icon-change{
+    width: 30px;
+    height: 30px;
+}
+.profile-info{
+    margin-bottom: 130px;
+}
+.profile-right-image{
+    background-image: url("../img/profile.jpg");
+    background-size: cover;
+}

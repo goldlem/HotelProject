@@ -1,0 +1,13 @@
+.category-image{
+    margin-top: 15px;
+    width: 300px;
+    height: 200px;
+    border-radius: 3px;
+}
+.categories-conteiner{
+    margin-top: 50px;
+}
+.category-row{
+    display: flex;
+    justify-content: center;
+}
