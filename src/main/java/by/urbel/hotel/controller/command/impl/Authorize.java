@@ -46,7 +46,7 @@ public class Authorize implements Command {
             HttpSession session = request.getSession();
             session.setAttribute(RequestAttributes.USER, user);
             if (rememberUserStr != null) {
-                Cookie rememberUserCookie = new Cookie(USER_KEY, userService.updateUserCookie(user.getUserId()));
+                Cookie rememberUserCookie = new Cookie(USER_KEY, userService.updateUserToken(user.getUserId()));
                 rememberUserCookie.setMaxAge(ONE_MONTH_PERIOD);
                 response.addCookie(rememberUserCookie);
                 rememberUserCookie = new Cookie(USER_EMAIL, user.getEmail());

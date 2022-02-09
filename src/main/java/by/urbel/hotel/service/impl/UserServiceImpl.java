@@ -33,10 +33,10 @@ public class UserServiceImpl implements UserService {
     }
 
     @Override
-    public User authorizationByCookieAndEmail(String userCookieStr, String email) throws ServiceException {
+    public User authorizationByCookieAndEmail(String userToken, String email) throws ServiceException {
         try {
             User user = userDAO.readByEmailWithCookie(email);
-            if (!Objects.equals(user.getUserCookie(), userCookieStr)) {
+            if (!Objects.equals(user.getUserCookie(), userToken)) {
                 throw new UserException("UserTokens doesn't equals ");
             } else {
                 return user;
@@ -66,7 +66,7 @@ public class UserServiceImpl implements UserService {
     }
 
     @Override
-    public String updateUserCookie(int userId) throws ServiceException {
+    public String updateUserToken(int userId) throws ServiceException {
         String userCookie = UUID.randomUUID().toString();
         try {
             userDAO.updateUserCookie(userId, userCookie);
@@ -77,7 +77,7 @@ public class UserServiceImpl implements UserService {
     }
 
     @Override
-    public void deleteUserCookie(int userId) throws ServiceException {
+    public void deleteUserToken(int userId) throws ServiceException {
         try {
             userDAO.updateUserCookie(userId, null);
         } catch (DaoException e) {

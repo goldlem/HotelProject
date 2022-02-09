@@ -39,7 +39,7 @@ public class Logout implements Command {
                     cookie.setValue(null);
                     response.addCookie(cookie);
                     try {
-                        ServiceProvider.getInstance().getUserService().deleteUserCookie(user.getUserId());
+                        ServiceProvider.getInstance().getUserService().deleteUserToken(user.getUserId());
                     } catch (ServiceException e) {
                         LOGGER.warn("Cookie is not deleted in DB for user {}",user.getUserId(), e);
                     }

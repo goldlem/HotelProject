@@ -49,7 +49,7 @@
                 <div class="col-md-12">
                     <input type="tel" class="form-control" placeholder="${phoneNumber}" aria-label="${phoneNumber}"
                            name="phoneNumber" id="phoneNumber" maxlength="13" minlength="3"
-                           pattern="[0-9]{3}-[0-9]{3}-[0-9]{4}" required>
+                           pattern="+[0-9]{12}" required>
                 </div>
                 <div class="col-md-6">
                     <input type="password" name="password" minlength="8" maxlength="20" id="password"
