@@ -31,6 +31,9 @@ public class ReservationServiceImpl implements ReservationService {
             RoomDao roomDao = DaoProvider.getInstance().getRoomDao();
             try {
                 Room freeRoom = roomDao.readFreeRoomByCategoryName(checkInDate, checkOutDate, categoryName);
+                if (freeRoom == null){
+                    throw new ServiceException("There isn't room of this category");
+                }
                 Reservation reservation = new Reservation(
                         user,
                         this.calculateTotalCost(freeRoom, checkInDate, checkOutDate),

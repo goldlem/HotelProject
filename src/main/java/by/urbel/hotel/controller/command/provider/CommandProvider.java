@@ -1,5 +1,6 @@
-package by.urbel.hotel.controller.command;
+package by.urbel.hotel.controller.command.provider;
 
+import by.urbel.hotel.controller.command.Command;
 import by.urbel.hotel.controller.command.impl.*;
 import by.urbel.hotel.controller.command.impl.admin.*;
 

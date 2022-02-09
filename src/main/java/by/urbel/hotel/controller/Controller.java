@@ -1,7 +1,7 @@
 package by.urbel.hotel.controller;
 
 import by.urbel.hotel.controller.command.Command;
-import by.urbel.hotel.controller.command.CommandProvider;
+import by.urbel.hotel.controller.command.provider.CommandProvider;
 
 import javax.servlet.ServletException;
 import javax.servlet.annotation.MultipartConfig;

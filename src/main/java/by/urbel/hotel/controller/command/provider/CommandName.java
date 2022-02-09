@@ -1,4 +1,4 @@
-package by.urbel.hotel.controller.command;
+package by.urbel.hotel.controller.command.provider;
 
 public enum CommandName {
     AUTHORIZE,

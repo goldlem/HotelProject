@@ -20,18 +20,19 @@ public class CategoryDaoMySql implements CategoryDao {
     private static final ConnectionPool pool = ConnectionPool.getInstance();
 
     private static final String FIND_ALL_CATEGORIES =
-            "SELECT `categoryName`, `roomPrice`, `bedsCount` FROM categories";
+            "SELECT `categoryName`, `roomPrice`, `bedsCount`, `description_ru`, `description_en` FROM categories";
     private static final String FIND_ROOM_CATEGORY_BY_CATEGORY_NAME =
-            "SELECT `categoryName`, `roomPrice`, `bedsCount` FROM categories WHERE categoryName = ?";
+            "SELECT `categoryName`, `roomPrice`, `bedsCount`, `description_ru`, `description_en` FROM categories WHERE categoryName = ?";
     private static final String FIND_PHOTO_PATHS = "SELECT `photoPath` FROM `category_photos` WHERE categoryName = ?";
     private static final String DELETE_ROOM_CATEGORY_BY_NAME = "DELETE FROM `categories` WHERE categoryName = ?";
     private static final String DELETE_PHOTO_PATHS_BY_NAME = "DELETE FROM `category_photos` WHERE categoryName = ?";
     private static final String CREATE_ROOM_CATEGORY =
-            "INSERT INTO `categories`(`categoryName`, `roomPrice`, `bedsCount`) VALUE (?,?,?)";
+            "INSERT INTO `categories`(`categoryName`, `roomPrice`, `bedsCount`,`description_ru`,`description_en`) VALUE (?,?,?,?,?)";
     private static final String CREATE_PHOTO_PATHS =
             "INSERT INTO `category_photos`(`categoryName`, `photoPath`) VALUE (?,?)";
     private static final String UPDATE_ROOM_CATEGORY =
-            "UPDATE `categories` SET `roomPrice` = ?, `bedsCount` = ? WHERE `categoryName`=?";
+            "UPDATE `categories` SET `roomPrice` = ?, `bedsCount` = ?, `description_en`=?, `description_ru`=? " +
+                    "WHERE `categoryName`=?";
     private static final String UPDATE_CATEGORY_PHOTOS =
             "UPDATE `category_photos` SET `photoPath` = ? WHERE `categoryName`=?";
     private static final String FIND_FREE_CATEGORIES_BY_DATES_AND_BEDS_NUMBER =
@@ -40,6 +41,8 @@ public class CategoryDaoMySql implements CategoryDao {
     private static final String CATEGORY_NAME_ATTRIBUTE = "categoryName";
     private static final String ROOM_PRICE_ATTRIBUTE = "roomPrice";
     private static final String COUNT_OF_BEDS_ATTRIBUTE = "bedsCount";
+    private static final String DESCRIPTION_EN_ATTRIBUTE = "description_en";
+    private static final String DESCRIPTION_RU_ATTRIBUTE = "description_ru";
     private static final String PHOTO_PATH_ATTRIBUTE = "photoPath";
 
     @Override
@@ -52,6 +55,9 @@ public class CategoryDaoMySql implements CategoryDao {
                 preparedStatement.setString(1, roomCategory.getCategoryName());
                 preparedStatement.setBigDecimal(2, roomCategory.getRoomPrice());
                 preparedStatement.setInt(3, roomCategory.getBedsCount());
+                preparedStatement.setString(4, roomCategory.getDescriptionRu());
+                preparedStatement.setString(5, roomCategory.getDescriptionEn());
+
                 preparedStatement.executeUpdate();
 
                 preparedStatement = connection.prepareStatement(CREATE_PHOTO_PATHS);
@@ -61,7 +67,7 @@ public class CategoryDaoMySql implements CategoryDao {
                     preparedStatement.executeUpdate();
                 }
                 connection.commit();
-            }catch (SQLIntegrityConstraintViolationException e){
+            } catch (SQLIntegrityConstraintViolationException e) {
                 connection.rollback();
                 throw new ObjectAlreadyExistsException(e);
             } catch (SQLException e) {
@@ -150,6 +156,8 @@ public class CategoryDaoMySql implements CategoryDao {
                 preparedStatement.setBigDecimal(1, roomCategory.getRoomPrice());
                 preparedStatement.setInt(2, roomCategory.getBedsCount());
                 preparedStatement.setString(3, roomCategory.getCategoryName());
+                preparedStatement.setString(4, roomCategory.getDescriptionEn());
+                preparedStatement.setString(5, roomCategory.getDescriptionRu());
                 preparedStatement.executeUpdate();
 
                 preparedStatement = connection.prepareStatement(UPDATE_CATEGORY_PHOTOS);
@@ -172,7 +180,6 @@ public class CategoryDaoMySql implements CategoryDao {
             LOGGER.error(e.getMessage());
             throw new DaoException(e);
         }
-
     }
 
     @Override
@@ -189,90 +196,92 @@ public class CategoryDaoMySql implements CategoryDao {
                 preparedStatement.setString(1, categoryName);
                 preparedStatement.executeUpdate();
                 connection.commit();
-            }catch (SQLIntegrityConstraintViolationException e){
+            } catch (SQLIntegrityConstraintViolationException e) {
                 connection.rollback();
                 throw new ObjectIsUsedException(e);
-            }catch (SQLException e){
+            } catch (SQLException e) {
                 connection.rollback();
                 throw new DaoException(e);
-            }finally {
-                connection.setAutoCommit(true);
-                if (preparedStatement!=null){
-                    preparedStatement.close();
-                }
-            }
-            } catch (SQLException | ConnectionPoolException e) {
-                throw new DaoException(e);
-            }
-        }
-
-        @Override
-        public List<RoomCategory> readFreeCategoriesByDatesAndBedsNumber ( int bedsNumber, Date checkIn, Date checkOut)
-            throws DaoException {
-            List<RoomCategory> categoryList = new ArrayList<>();
-            try (Connection connection = pool.getConnection()) {
-                PreparedStatement preparedStatement = null;
-                try {
-                    connection.setAutoCommit(false);
-                    preparedStatement = connection.prepareStatement(FIND_FREE_CATEGORIES_BY_DATES_AND_BEDS_NUMBER);
-                    preparedStatement.setObject(1, checkIn);
-                    preparedStatement.setObject(2, checkOut);
-                    preparedStatement.setInt(3, bedsNumber);
-
-                    try (ResultSet rs = preparedStatement.executeQuery()) {
-                        while (rs.next()) {
-                            categoryList.add(this.resultSetToCategory(rs, connection));
-                        }
-                    }catch (SQLException e){
-                        throw new DaoException(e);
-                    }
-                    connection.commit();
-                } catch (SQLException e) {
-                    connection.rollback();
-                    throw new DaoException(e);
-                } finally {
-                    connection.setAutoCommit(true);
-                    if (preparedStatement != null) {
-                        preparedStatement.close();
-                    }
-                }
-            } catch (SQLException | ConnectionPoolException e) {
-                throw new DaoException(e);
-            }
-            return categoryList;
-        }
-
-        private List<String> readPhotoPaths (Connection connection, String categoryName) throws SQLException {
-
-            List<String> photoPaths = new ArrayList<>();
-            PreparedStatement preparedStatement = null;
-            ResultSet resultSet = null;
-            try {
-                preparedStatement = connection.prepareStatement(FIND_PHOTO_PATHS);
-                preparedStatement.setString(1, categoryName);
-                resultSet = preparedStatement.executeQuery();
-                while (resultSet.next()) {
-                    photoPaths.add(resultSet.getString(PHOTO_PATH_ATTRIBUTE));
-                }
-                return photoPaths;
             } finally {
+                connection.setAutoCommit(true);
                 if (preparedStatement != null) {
                     preparedStatement.close();
                 }
-                if (resultSet != null) {
-                    resultSet.close();
-                }
             }
-        }
-
-        private RoomCategory resultSetToCategory (ResultSet rs, Connection connection) throws SQLException {
-            String categoryName = rs.getString(CATEGORY_NAME_ATTRIBUTE);
-            List<String> photoPaths = this.readPhotoPaths(connection, categoryName);
-            return new RoomCategory(
-                    categoryName,
-                    rs.getBigDecimal(ROOM_PRICE_ATTRIBUTE),
-                    rs.getInt(COUNT_OF_BEDS_ATTRIBUTE),
-                    photoPaths
-            );
+        } catch (SQLException | ConnectionPoolException e) {
+            throw new DaoException(e);
         }
     }
+
+    @Override
+    public List<RoomCategory> readFreeCategoriesByDatesAndBedsNumber(int bedsNumber, Date checkIn, Date checkOut)
+            throws DaoException {
+        List<RoomCategory> categoryList = new ArrayList<>();
+        try (Connection connection = pool.getConnection()) {
+            PreparedStatement preparedStatement = null;
+            try {
+                connection.setAutoCommit(false);
+                preparedStatement = connection.prepareStatement(FIND_FREE_CATEGORIES_BY_DATES_AND_BEDS_NUMBER);
+                preparedStatement.setObject(1, checkIn);
+                preparedStatement.setObject(2, checkOut);
+                preparedStatement.setInt(3, bedsNumber);
+
+                try (ResultSet rs = preparedStatement.executeQuery()) {
+                    while (rs.next()) {
+                        categoryList.add(this.resultSetToCategory(rs, connection));
+                    }
+                } catch (SQLException e) {
+                    throw new DaoException(e);
+                }
+                connection.commit();
+            } catch (SQLException e) {
+                connection.rollback();
+                throw new DaoException(e);
+            } finally {
+                connection.setAutoCommit(true);
+                if (preparedStatement != null) {
+                    preparedStatement.close();
+                }
+            }
+        } catch (SQLException | ConnectionPoolException e) {
+            throw new DaoException(e);
+        }
+        return categoryList;
+    }
+
+    private List<String> readPhotoPaths(Connection connection, String categoryName) throws SQLException {
+
+        List<String> photoPaths = new ArrayList<>();
+        PreparedStatement preparedStatement = null;
+        ResultSet resultSet = null;
+        try {
+            preparedStatement = connection.prepareStatement(FIND_PHOTO_PATHS);
+            preparedStatement.setString(1, categoryName);
+            resultSet = preparedStatement.executeQuery();
+            while (resultSet.next()) {
+                photoPaths.add(resultSet.getString(PHOTO_PATH_ATTRIBUTE));
+            }
+            return photoPaths;
+        } finally {
+            if (preparedStatement != null) {
+                preparedStatement.close();
+            }
+            if (resultSet != null) {
+                resultSet.close();
+            }
+        }
+    }
+
+    private RoomCategory resultSetToCategory(ResultSet rs, Connection connection) throws SQLException {
+        String categoryName = rs.getString(CATEGORY_NAME_ATTRIBUTE);
+        List<String> photoPaths = this.readPhotoPaths(connection, categoryName);
+        return new RoomCategory(
+                categoryName,
+                rs.getBigDecimal(ROOM_PRICE_ATTRIBUTE),
+                rs.getInt(COUNT_OF_BEDS_ATTRIBUTE),
+                rs.getString(DESCRIPTION_RU_ATTRIBUTE),
+                rs.getString(DESCRIPTION_EN_ATTRIBUTE),
+                photoPaths
+        );
+    }
+}

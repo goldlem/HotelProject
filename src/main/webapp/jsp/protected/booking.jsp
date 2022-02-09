@@ -1,6 +1,14 @@
 <%@ page contentType="text/html;charset=UTF-8" %>
 <%@ page import="by.urbel.hotel.entity.UserType" %>
 <%@ taglib prefix="c" uri="http://java.sun.com/jsp/jstl/core" %>
+<%@ taglib prefix="fmt" uri="http://java.sun.com/jsp/jstl/fmt" %>
+
+<fmt:setLocale value="${sessionScope.locale}"/>
+<fmt:setBundle basename="locale" var="Loc"/>
+<fmt:message bundle="${Loc}" key="Locale.name.bedsCount" var="nameBedsCount"/>
+<fmt:message bundle="${Loc}" key="Locale.name.roomPrice" var="nameRoomPrice"/>
+<fmt:message bundle="${Loc}" key="Locale.button.book" var="btnBook"/>
+<fmt:message bundle="${Loc}" key="Locale.name.rooms.empty" var="nameRoomsEmpty"/>
 
 <jsp:useBean id="categories" scope="session" type="java.util.List"/>
 <html>
@@ -23,7 +31,7 @@
             <c:choose>
                 <c:when test="${empty categories}">
                     <div class="row text-center">
-                        <p class="fs-3">There aren't rooms</p>
+                        <p class="fs-3">${nameRoomsEmpty}</p>
                     </div>
                 </c:when>
                 <c:otherwise>
@@ -61,18 +69,25 @@
                                     <div class="col-md-7">
                                         <div class="card-body">
                                             <h5 class="card-title">${category.categoryName}</h5>
-                                            <p class="card-text">This is a wider card with supporting text below as a
-                                                natural
-                                                lead-in to additional content. This content is a little bit longer.</p>
-                                            <p class="card-text">Beds count: ${category.bedsCount}</p>
+                                            <c:choose>
+                                                <c:when test="${sessionScope.locale.equals('ru')}">
+                                                    <p class="card-text">${category.descriptionRu}</p>
+                                                </c:when>
+                                                <c:when test="${sessionScope.locale.equals('en')}">
+                                                    <p class="card-text">${category.descriptionEn}</p>
+                                                </c:when>
+                                                <c:otherwise>
+                                                    <p class="card-text">${category.descriptionRu}</p>
+                                                </c:otherwise>
+                                            </c:choose>
+                                            <p class="card-text">${nameBedsCount}: ${category.bedsCount}</p>
                                             <div class="row">
-                                                <div class="col-6"> Price: ${category.roomPrice}$</div>
+                                                <div class="col-6"> ${nameRoomPrice}: ${category.roomPrice}$</div>
                                                 <c:if test="${sessionScope.user.role.equals(UserType.CLIENT)}">
                                                     <form method="post" class="col-6"
                                                           action="${pageContext.request.contextPath}/controller?command=reserve_room">
                                                         <input type="submit" class="btn btn-primary"
-                                                               name="update-button"
-                                                               value="Reserve">
+                                                               name="update-button" value="${btnBook}">
                                                         <input type="hidden" name="categoryName"
                                                                value="${category.categoryName}">
                                                     </form>

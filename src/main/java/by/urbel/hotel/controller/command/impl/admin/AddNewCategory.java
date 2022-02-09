@@ -37,6 +37,8 @@ public class AddNewCategory implements Command {
         String categoryName = request.getParameter(RequestParameters.CATEGORY_NAME);
         BigDecimal roomPrice = new BigDecimal(request.getParameter(RequestParameters.ROOM_PRICE));
         int bedsNumber = Integer.parseInt(request.getParameter(RequestParameters.NUMBER_OF_BEDS));
+        String descriptionEn = request.getParameter(RequestParameters.DESCRIPTION_EN).trim();
+        String descriptionRu = request.getParameter(RequestParameters.DESCRIPTION_RU).trim();
         Collection<Part> partList = request.getParts();
         String uploadFolderPath = request.getRealPath("/uploads");
 
@@ -45,7 +47,15 @@ public class AddNewCategory implements Command {
         PhotoService photoService = serviceProvider.getPhotoService();
         try {
             List<String> photoPaths = photoService.uploadPhotos(partList, uploadFolderPath);
-            boolean isCreated = categoryService.createRoomCategory(new RoomCategory(categoryName, roomPrice, bedsNumber, photoPaths));
+            RoomCategory category = new RoomCategory(
+                    categoryName,
+                    roomPrice,
+                    bedsNumber,
+                    descriptionRu,
+                    descriptionEn,
+                    photoPaths
+            );
+            boolean isCreated = categoryService.createRoomCategory(category);
             if (isCreated) {
                 LOGGER.info("Category {} is added", categoryName);
                 response.sendRedirect(request.getContextPath() + PageURL.FIND_CATEGORIES_PAGE);

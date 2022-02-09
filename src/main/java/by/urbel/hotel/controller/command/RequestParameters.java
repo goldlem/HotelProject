@@ -15,6 +15,8 @@ public final class RequestParameters {
     public static final String PHONE_NUMBER = "phoneNumber";
     public static final String CHECK_IN_DATE = "checkInDate";
     public static final String CHECK_OUT_DATE = "checkOutDate";
+    public static final String DESCRIPTION_EN = "description_en";
+    public static final String DESCRIPTION_RU = "description_ru";
 
     private RequestParameters() {
     }

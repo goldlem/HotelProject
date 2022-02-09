@@ -19,7 +19,7 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>${addingCategory}</title>
     <link rel="icon" href="${pageContext.request.contextPath}/img/hotel-icon.png">
-<%--    <link rel="stylesheet" type="text/css" href="${pageContext.request.contextPath}/css/style.css">--%>
+    <%--    <link rel="stylesheet" type="text/css" href="${pageContext.request.contextPath}/css/style.css">--%>
 </head>
 <body>
 <c:import url="/header"/>
@@ -75,6 +75,24 @@
                         <div class="col-12">
                             <input type="file" class="form-control" name="categoryPhotos" id="categoryPhotos"
                                    multiple accept="image/*" max="3" required>
+                        </div>
+                    </div>
+                    <div class="row m-2">
+                        <label class="col-12 m-2 form-label" for="description_ru">
+                            DESCRIPTION ON RU
+                        </label>
+                        <div class="col-12">
+                            <textarea name="description_ru" id="description_ru" maxlength="200"
+                                      rows="5" class="form-control"></textarea>
+                        </div>
+                    </div>
+                    <div class="row m-2">
+                        <label class="col-12 m-2 form-label" for="description_en">
+                            DESCRIPTION ON EN
+                        </label>
+                        <div class="col-12">
+                            <textarea name="description_en" id="description_en" maxlength="200"
+                                      rows="5" class="form-control"></textarea>
                         </div>
                     </div>
                     <div class="row m-2 mt-4">

@@ -17,7 +17,6 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Sing In</title>
     <link rel="icon" href="${pageContext.request.contextPath}/img/hotel-icon.png">
-        <link rel="stylesheet" type="text/css" href="${pageContext.request.contextPath}/css/style.css">
     <link rel="stylesheet" type="text/css" href="${pageContext.request.contextPath}/css/authorization.css">
 </head>
 <body>
@@ -32,11 +31,11 @@
             <input type="hidden" name="command" value="authorize">
             <div class="form-group">
                 <label for="email">${email}</label>
-                <input type="email" class="form-control" id="email" name="email" placeholder="email@example.com">
+                <input type="email" class="form-control" id="email" name="email" placeholder="email@example.com" required>
             </div>
             <div class="form-group">
                 <label for="password">${password}</label>
-                <input type="password" class="form-control" id="password" name="password" placeholder="Password">
+                <input type="password" class="form-control" id="password" name="password" placeholder="Password" required>
             </div>
             <div class="form-check">
                 <input type="checkbox" class="form-check-input" id="rememberUser" name="rememberUser" checked>
